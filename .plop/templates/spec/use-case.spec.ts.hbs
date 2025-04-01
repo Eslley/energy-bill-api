@@ -1,0 +1,39 @@
+import { DummyError } from '../errors';
+import type { {{ pascalCase name }}Repository } from '../repository';
+import { {{ pascalCase name }}UseCase, SuccessOutput } from '../use-case';
+import { input, output } from './fixtures/dtos';
+import { dummy } from './fixtures/repository';
+
+class Mock{{ pascalCase name }}Repository implements {{ pascalCase name }}Repository {
+  dummy = jest.fn(async (): Promise<void> => dummy);
+}
+
+const repository = new Mock{{ pascalCase name }}Repository();
+
+function buildUseCase(): {{ pascalCase name }}UseCase {
+  return new {{ pascalCase name }}UseCase(repository);
+}
+
+describe('{{ pascalCase name }}UseCase', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('should succeed', async () => {
+    repository.dummy.mockResolvedValueOnce(dummy);
+
+    const useCase = buildUseCase();
+    const result = await useCase.run(input);
+
+    expect(result.isRight()).toBeTruthy();
+    expect(result.value).toEqual<SuccessOutput>(output);
+  });
+
+  it('should fail with DummyError', async () => {
+    repository.dummy.mockResolvedValueOnce(dummy);
+
+    const useCase = buildUseCase();
+    const result = await useCase.run(input);
+
+    expect(result.isWrong()).toBeTruthy();
+    expect(result.value).toBeInstanceOf(DummyError);
+  });
+});
