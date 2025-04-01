@@ -1,10 +1,10 @@
 version: '3.8'
 
-name: base
+name: energy-bill
 
 networks:
-  base:
-    name: base
+  energy-bill:
+    name: energy-bill
     driver: bridge
 
 services:
@@ -14,7 +14,7 @@ services:
     ports:
       - 5432:5432
     networks:
-      - base
+      - energy-bill
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
@@ -32,7 +32,7 @@ services:
     ports:
       - 3000:3000
     networks:
-      - base
+      - energy-bill
     depends_on:
       database:
         condition: service_healthy

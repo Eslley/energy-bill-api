@@ -4,6 +4,7 @@ import config from 'config';
 import cors, { CorsOptions } from 'cors';
 import helmet, { HelmetOptions } from 'helmet';
 import glob from 'tiny-glob';
+import * as express from 'express';
 
 import { DatabaseModule, PrismaDatabaseModule } from '@modules/database';
 import logger from '@modules/logger';
@@ -26,6 +27,7 @@ export class Server extends OvernightServer {
     this.app.use(helmet(helmetOptions));
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(bodyParser.json());
+    this.app.use('/upload', express.static(config.get('storage.path')));
 
     logger.info(corsOptions, 'Cors');
     logger.info(helmetOptions, 'Helmet');

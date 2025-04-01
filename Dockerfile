@@ -24,7 +24,8 @@ COPY --from=builder /usr/app/node_modules ./node_modules
 COPY --from=builder /usr/app/package.json ./package.json
 COPY --from=builder /usr/app/package-lock.json ./package-lock.json
 
-COPY --from=builder /usr/app/src/templates ./dist/templates
+RUN apk add --no-cache openssl
+RUN mkdir -p /usr/app/upload
 
 EXPOSE 3000
 

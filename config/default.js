@@ -24,25 +24,8 @@ module.exports = {
     accessToken: {
       expiresIn: process.env.AUTH_ACCESS_TOKEN_EXPIRES_IN,
     },
-    idToken: {
-      expiresIn: process.env.AUTH_ID_TOKEN_EXPIRES_IN,
-    },
-    refreshToken: {
-      expiresIn: process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN,
-    },
   },
-  email: {
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: process.env.EMAIL_SECURE,
-    username: process.env.EMAIL_USERNAME,
-    password: process.env.EMAIL_PASSWORD,
-    from: process.env.EMAIL_FROM,
-    templatesFolder: 'templates/email',
+  storage: {
+    path: process.env.STORAGE_PATH,
   },
-  queue: {
-    host: process.env.QUEUE_HOST,
-    port: process.env.QUEUE_PORT,
-    password: process.env.QUEUE_PASSWORD,
-  }
 };
