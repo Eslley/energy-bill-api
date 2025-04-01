@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -7,9 +8,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Base {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+model Client {
+  id   String @id
+  name String
+
+  energyBills EnergyBill[]
+}
+
+model Installation {
+  id             String  @id
+  class          String
+  subclass       String?
+  tariffModality String
+
+  energyBills EnergyBill[]
+}
+
+model EnergyBill {
+  id                         Int      @id @default(autoincrement())
+  clientId                   String
+  installationId             String
+  installationNumber         String
+  referenceDate              DateTime
+  dueDate                    DateTime
+  emissionDate               DateTime
+  receiptNumber              String
+  totalValue                 Decimal  @db.Decimal(15, 2)
+  eletricalEnergyQuantity    Int
+  eletricalEnergyUnitValue   Decimal  @db.Decimal(10, 6)
+  eletricalEnergyTotalValue  Decimal  @db.Decimal(15, 2)
+  GDIEnergyQuantity          Int
+  GDIEnergyUnitValue         Decimal  @db.Decimal(10, 6)
+  GDIEnergyTotalValue        Decimal  @db.Decimal(15, 2)
+  SCEEEnergyQuantity         Int
+  SCEEEnergyUnitValue        Decimal  @db.Decimal(10, 6)
+  SCEEEnergyTotalValue       Decimal  @db.Decimal(15, 2)
+  publicLightingContribution Decimal  @db.Decimal(15, 2)
+  damageCompensation         Decimal? @db.Decimal(15, 2)
+  billBarCode                String
+  raw                        Json
+
+  client       Client       @relation(fields: [clientId], references: [id])
+  installation Installation @relation(fields: [installationId], references: [id])
 }
