@@ -1,12 +1,3 @@
-export enum Bucket {
-  Public = 'base-public',
-  Private = 'base-private',
-}
-
-export type PutOptions = {
-  key: string;
-};
-
 export type File = {
   originalName: string;
   mimeType: string;
@@ -15,13 +6,8 @@ export type File = {
 };
 
 export interface StorageService {
-  put(
-    bucket: Bucket,
-    path: string,
-    file: File,
-    options?: PutOptions
-  ): Promise<string>;
-  get(bucket: Bucket, key: string): Promise<File>;
-  delete(bucket: Bucket, key: string): Promise<void>;
-  url(bucket: Bucket, key: string): Promise<string>;
+  put(file: File): Promise<string>;
+  get(key: string): Promise<File>;
+  delete(key: string): Promise<void>;
+  url(key: string): Promise<string>;
 }
