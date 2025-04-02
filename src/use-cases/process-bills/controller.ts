@@ -5,7 +5,8 @@ import { Controller } from '@core/controller';
 import { ApplicationError } from '@errors/application-error';
 import type * as errors from './errors';
 import { buildUseCase } from './factory';
-import type { FailureOutput, Input, SuccessOutput } from './use-case';
+import type { FailureOutput, SuccessOutput } from './use-case';
+import { prisma } from '@modules/database';
 
 type ErrorTypes =
   | keyof typeof errors
@@ -13,8 +14,8 @@ type ErrorTypes =
   | 'UnknownError'
   | string;
 
-@OvernightController('process-pdf')
-export class ProcessPdfController extends Controller<
+@OvernightController('process-bills')
+export class ProcessBillsController extends Controller<
   FailureOutput,
   SuccessOutput
 > {
@@ -23,8 +24,18 @@ export class ProcessPdfController extends Controller<
     req: Request,
     res: Response
   ): Promise<SuccessOutput | FailureOutput | undefined> {
-    const useCase = buildUseCase();
-    const result = await useCase.run(req.body as Input);
+    const result = await prisma
+      .$transaction(
+        async (prismaTransaction) => {
+          const useCase = buildUseCase(prismaTransaction);
+
+          const result = await useCase.run();
+          if (result.isWrong()) throw result;
+          return result;
+        },
+        { timeout: 30000 }
+      )
+      .catch((error) => error);
 
     if (result.isWrong()) {
       const error = result.value;

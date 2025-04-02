@@ -4,7 +4,9 @@ import { NewEnergyBillEntity } from './types';
 export class EnergyBillRepository {
   constructor(private readonly prisma: Prisma.TransactionClient) {}
 
-  public async getById(energyBillId: string): Promise<EnergyBill | null> {
+  public async getEnergyBillById(
+    energyBillId: string
+  ): Promise<EnergyBill | null> {
     return await this.prisma.energyBill.findFirst({
       where: {
         id: energyBillId,
@@ -45,7 +47,7 @@ export class EnergyBillRepository {
     });
   }
 
-  public async deleteMedia(energyBillId: string): Promise<void> {
+  public async deleteEnergyBill(energyBillId: string): Promise<void> {
     await this.prisma.energyBill.delete({
       where: {
         id: energyBillId,

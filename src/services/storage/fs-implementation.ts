@@ -15,20 +15,19 @@ export class FileSystemStorageService implements StorageService {
 
   async put(file: File): Promise<string> {
     const [, extension] = file.originalName.split('.');
-    const key = `${this.storageDir}/${uuid()}.${extension}`;
+    const fileName = `${uuid()}.${extension}`;
 
-    const filePath = path.join(this.storageDir, key);
+    const filePath = path.join(this.storageDir, fileName);
 
-    logger.info({ key, file }, 'Saving file to filesystem');
+    logger.info(`Saving file ${fileName} to filesystem...`);
 
     try {
       await fs.writeFile(filePath, file.buffer);
+      return fileName;
     } catch (error) {
-      logger.error({ error, key, file }, 'Error saving file to filesystem');
+      logger.error('Error saving file to filesystem', { fileName, error });
       throw new Error('Failed to save file');
     }
-
-    return key;
   }
 
   async get(key: string): Promise<File> {
@@ -41,7 +40,7 @@ export class FileSystemStorageService implements StorageService {
 
       return {
         originalName: path.basename(key),
-        mimeType: 'application/octet-stream',
+        mimeType: 'application/pdf',
         size: fileBuffer.length,
         buffer: fileBuffer,
       };
