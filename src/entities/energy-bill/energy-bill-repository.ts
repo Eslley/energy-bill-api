@@ -11,6 +11,12 @@ export class EnergyBillRepository {
       where: {
         id: energyBillId,
       },
+      include: {
+        document: true,
+      },
+      orderBy: {
+        referenceDate: 'asc',
+      },
     });
   }
 
@@ -20,11 +26,15 @@ export class EnergyBillRepository {
     });
   }
 
-  public async save(data: NewEnergyBillEntity): Promise<EnergyBill> {
+  public async save(
+    data: NewEnergyBillEntity,
+    documentId: string
+  ): Promise<EnergyBill> {
     return await this.prisma.energyBill.create({
       data: {
         clientId: data.client.number,
         installationId: data.installation.number,
+        documentId,
         referenceDate: data.referenceDate,
         dueDate: data.dueDate,
         emissionDate: data.emissionDate,

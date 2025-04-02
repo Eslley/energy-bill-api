@@ -63,7 +63,8 @@ export class EnergyBillService {
   }
 
   async saveEnergyBill(
-    data: NewEnergyBillEntity
+    data: NewEnergyBillEntity,
+    documentId: string
   ): Promise<
     Either<
       EnergyBillCreationError | ClientNotFoundError | InstallationNotFoundError,
@@ -92,7 +93,7 @@ export class EnergyBillService {
         });
       }
 
-      const energyBill = await this.repository.save(data);
+      const energyBill = await this.repository.save(data, documentId);
 
       return right(this.mapToEntity(energyBill));
     } catch (error) {
@@ -112,6 +113,7 @@ export class EnergyBillService {
       id: data.id,
       clientId: data.clientId,
       installationId: data.installationId,
+      documentId: data.documentId,
       referenceDate: data.referenceDate,
       dueDate: data.dueDate,
       emissionDate: data.emissionDate,

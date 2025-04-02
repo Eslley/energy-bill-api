@@ -15,62 +15,63 @@ model Client {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  energyBills EnergyBill[]
+  energyBills   EnergyBill[]
   installations Installation[]
 
   @@map("client")
 }
 
-
 model Installation {
-  id             String  @id
-  clientId       String
+  id       String @id
+  clientId String
 
-  client       Client       @relation(fields: [clientId], references: [id])
+  client Client @relation(fields: [clientId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   energyBills EnergyBill[]
 
   @@map("installation")
 }
 
 model EnergyBill {
-  id                         String      @id @default(uuid()) @db.Uuid
-  clientId                   String
-  installationId             String
+  id             String @id @default(uuid()) @db.Uuid
+  clientId       String
+  installationId String
+  documentId     String @unique @db.Uuid
 
-  referenceDate              DateTime
-  dueDate                    DateTime
-  emissionDate               DateTime
+  referenceDate DateTime
+  dueDate       DateTime
+  emissionDate  DateTime
 
-  receiptNumber              String
-  totalValue                 Decimal  @db.Decimal(15, 2)
+  receiptNumber String
+  totalValue    Decimal @db.Decimal(15, 2)
 
-  eletricalEnergyQuantity    Int
-  eletricalEnergyUnitValue   Decimal  @db.Decimal(10, 6)
-  eletricalEnergyTotalValue  Decimal  @db.Decimal(15, 2)
+  eletricalEnergyQuantity   Int
+  eletricalEnergyUnitValue  Decimal @db.Decimal(10, 6)
+  eletricalEnergyTotalValue Decimal @db.Decimal(15, 2)
 
-  GDIEnergyQuantity          Int
-  GDIEnergyUnitValue         Decimal  @db.Decimal(10, 6)
-  GDIEnergyTotalValue        Decimal  @db.Decimal(15, 2)
+  GDIEnergyQuantity   Int
+  GDIEnergyUnitValue  Decimal @db.Decimal(10, 6)
+  GDIEnergyTotalValue Decimal @db.Decimal(15, 2)
 
-  SCEEEnergyQuantity         Int
-  SCEEEnergyUnitValue        Decimal  @db.Decimal(10, 6)
-  SCEEEnergyTotalValue       Decimal  @db.Decimal(15, 2)
+  SCEEEnergyQuantity   Int
+  SCEEEnergyUnitValue  Decimal @db.Decimal(10, 6)
+  SCEEEnergyTotalValue Decimal @db.Decimal(15, 2)
 
   publicLightingContribution Decimal  @db.Decimal(15, 2)
   damageCompensation         Decimal? @db.Decimal(15, 2)
 
-  billBarCode                String
-  raw                        String
+  billBarCode String
+  raw         String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   client       Client       @relation(fields: [clientId], references: [id])
   installation Installation @relation(fields: [installationId], references: [id])
+  document     Document     @relation(fields: [documentId], references: [id])
 
   @@map("energy_bill")
 }
@@ -83,6 +84,8 @@ model Document {
   path      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  energyBill EnergyBill?
 
   @@map("document")
 }

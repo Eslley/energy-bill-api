@@ -60,6 +60,18 @@ export class ProcessBillsUseCase extends UseCase<
     for (const filePath of files) {
       const file = await this.storageService.get(`faturas/${filePath}`);
 
+      const fileKey = await this.storageService.put(file);
+      const documentData = await this.documentService.saveDocument({
+        fileName: file.originalName,
+        mimeType: file.mimeType,
+        path: fileKey,
+        size: file.size,
+      });
+      if (documentData.isWrong()) {
+        logger.error('error error saving document');
+        continue;
+      }
+
       const parseResult = await this.pdfParserService.parse(file.buffer);
       if (parseResult.isWrong()) {
         logger.error('error parsing pdf', parseResult.value);
@@ -71,20 +83,13 @@ export class ProcessBillsUseCase extends UseCase<
         this.energyBillService.mapParsedToNewEntity(parsedBill);
 
       const billCreationResult = await this.energyBillService.saveEnergyBill(
-        mappedBill
+        mappedBill,
+        documentData.value.id
       );
       if (billCreationResult.isWrong()) {
         logger.error('error saving bill', parseResult.value);
         continue;
       }
-
-      const fileKey = await this.storageService.put(file);
-      await this.documentService.saveDocument({
-        fileName: file.originalName,
-        mimeType: file.mimeType,
-        path: fileKey,
-        size: file.size,
-      });
     }
 
     return right(undefined);

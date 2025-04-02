@@ -1,7 +1,10 @@
+import { DocumentEntity } from '@entities/document/types';
+
 export interface EnergyBillEntity {
   id: string;
   clientId: string;
   installationId: string;
+  documentId: string;
 
   referenceDate: Date;
   dueDate: Date;
@@ -27,6 +30,8 @@ export interface EnergyBillEntity {
 
   billBarCode: string;
   raw: string;
+
+  document: DocumentEntity;
 
   createdAt: Date;
   updatedAt: Date;
