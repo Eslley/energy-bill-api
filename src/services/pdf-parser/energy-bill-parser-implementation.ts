@@ -21,7 +21,6 @@ export class EnergyBillParserService implements PdfParserService {
     try {
       const result = await pdfParse(buffer);
 
-      console.log(result.text);
       const parsedBill = this.mountParsedObject(result.text);
 
       return right(parsedBill);
@@ -44,6 +43,24 @@ export class EnergyBillParserService implements PdfParserService {
       return convertFn ? convertFn(match) : (match[1].trim() as T);
     };
 
+    const extractClientName = (): string => {
+      let clientName = '';
+      const clienNameVariation1match = pdfText.match(
+        regexPatterns.clientNameVariation1
+      );
+      if (!clienNameVariation1match) {
+        const clienNameVariation2match = pdfText.match(
+          regexPatterns.clientNameVariation2
+        );
+        if (clienNameVariation2match) clientName = clienNameVariation2match[1];
+        else throw new EnergyBillParserFieldError('clientName');
+      } else {
+        clientName = clienNameVariation1match[1];
+      }
+
+      return clientName.trim();
+    };
+
     const referenceMonth = extractField('referencedDate', (match) => match[1]);
     const referencedYear = Number(
       extractField('referencedDate', (match) => match[2])
@@ -61,7 +78,7 @@ export class EnergyBillParserService implements PdfParserService {
       : undefined;
 
     return {
-      clientName: extractField('clientName'),
+      clientName: extractClientName(),
       clientNumber: extractField('clientNumber'),
       installationNumber: extractField('installationNumber'),
       referenceDate,

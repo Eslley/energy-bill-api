@@ -1,6 +1,8 @@
 export const regexPatterns = {
   clientNumber: /Nº DO CLIENTE\s+Nº DA INSTALAÇÃO\s+(\d*)/,
-  clientName: /(?<=\d{11}-\d\s\d{11}-\d\s\d{11}-\d\s\d{11}-\d)\s([A-ZÀ-ÿ\s]+)/,
+  clientNameVariation1: /ATENÇÃO:\n.*\n(.*)/, // Extrai o nome do cliente quando tem a label "ATENÇÃO:" o precedendo
+  clientNameVariation2:
+    /\d{11}-\d\s\d{11}-\d\s\d{11}-\d\s\d{11}-\d\s([A-ZÀ-ÿ\s]+)/, // Extrai o nome do cliente quando sem a label "ATENÇÃO:"
   installationNumber: /Nº DA INSTALAÇÃO\s+\d*\s+(\d*)/,
   referencedDate:
     /Referente a\s+Vencimento\s+Valor a pagar\s+\(R\$\)\s+(\w*)\/(\d*)/, // 1 - Mês (JAN) 2 - Ano (2025)
