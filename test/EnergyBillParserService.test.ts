@@ -1,7 +1,10 @@
 import pdfParse from 'pdf-parse';
 import { Either } from '@core/either';
 import { EnergyBillParserService } from '@services/pdf-parser/energy-bill-parser-implementation';
-import { EnergyBillParserError } from '@services/pdf-parser/errors';
+import {
+  EnergyBillParserError,
+  EnergyBillParserFieldError,
+} from '@services/pdf-parser/errors';
 
 jest.mock('pdf-parse', () => jest.fn());
 
@@ -124,6 +127,8 @@ describe('EnergyBillParserService', () => {
   it('should throw an error if a required field is missing', () => {
     const mockInvalidPdfText = '';
 
-    expect(() => service.mountParsedObject(mockInvalidPdfText)).toThrow();
+    expect(() => service.mountParsedObject(mockInvalidPdfText)).toThrow(
+      EnergyBillParserFieldError
+    );
   });
 });
