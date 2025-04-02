@@ -25,9 +25,12 @@ export class DocumentService {
 
       return right(this.mapToEntity(document));
     } catch (error) {
-      logger.error(`Error getting document with id ${documentId}`, {
-        error,
-      });
+      logger.error(
+        {
+          error,
+        },
+        `Error getting document with id ${documentId}`
+      );
       return wrong(new DocumentNotFoundError(documentId));
     }
   }
@@ -40,9 +43,12 @@ export class DocumentService {
 
       return documents.map(this.mapToEntity);
     } catch (error) {
-      logger.error('Error getting documents', {
-        error,
-      });
+      logger.error(
+        {
+          error,
+        },
+        'Error getting documents'
+      );
       return [];
     }
   }
@@ -55,7 +61,7 @@ export class DocumentService {
 
       return right(this.mapToEntity(document));
     } catch (error) {
-      logger.error('Error saving document with data', { data, error });
+      logger.error({ data, error }, 'Error saving document with data');
       return wrong(new DocumentCreationError());
     }
   }

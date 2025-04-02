@@ -34,9 +34,12 @@ export class EnergyBillService {
 
       return right(this.mapToEntity(energyBill));
     } catch (error) {
-      logger.error(`Error getting energy bill with id ${energyBillId}`, {
-        error,
-      });
+      logger.error(
+        {
+          error,
+        },
+        `Error getting energy bill with id ${energyBillId}`
+      );
       return wrong(new EnergyBillNotFoundError(energyBillId));
     }
   }
@@ -49,9 +52,12 @@ export class EnergyBillService {
 
       return energyBills.map(this.mapToEntity);
     } catch (error) {
-      logger.error(`Error getting energy bills`, {
-        error,
-      });
+      logger.error(
+        {
+          error,
+        },
+        `Error getting energy bills`
+      );
       return [];
     }
   }

@@ -34,9 +34,12 @@ export class InstallationService {
 
       return right(this.mapToEntity(installation));
     } catch (error) {
-      logger.error(`Error getting installation with id ${installationId}`, {
-        error,
-      });
+      logger.error(
+        {
+          error,
+        },
+        `Error getting installation with id ${installationId}`
+      );
       return wrong(new InstallationNotFoundError(installationId));
     }
   }
@@ -49,9 +52,12 @@ export class InstallationService {
 
       return installations.map(this.mapToEntity);
     } catch (error) {
-      logger.error('Error getting installations', {
-        error,
-      });
+      logger.error(
+        {
+          error,
+        },
+        'Error getting installations'
+      );
       return [];
     }
   }
@@ -70,9 +76,12 @@ export class InstallationService {
       );
 
       if (existentInstallation) {
-        logger.error(`Installation with the id ${data.id} already exists`, {
-          data,
-        });
+        logger.error(
+          {
+            data,
+          },
+          `Installation with the id ${data.id} already exists`
+        );
         return wrong(new InstallationExistanceConflictError(data.id));
       }
 
@@ -85,7 +94,7 @@ export class InstallationService {
 
       return right(this.mapToEntity(installation));
     } catch (error) {
-      logger.error('Error saving installation with data', { data, error });
+      logger.error({ data, error }, 'Error saving installation with data');
       return wrong(new InstallationCreationError());
     }
   }

@@ -29,9 +29,12 @@ export class ClientService {
 
       return right(this.mapToEntity(client));
     } catch (error) {
-      logger.error(`Error getting client with id ${clientId}`, {
-        error,
-      });
+      logger.error(
+        {
+          error,
+        },
+        `Error getting client with id ${clientId}`
+      );
       return wrong(new ClientNotFoundError(clientId));
     }
   }
@@ -42,9 +45,12 @@ export class ClientService {
 
       return clients.map(this.mapToEntity);
     } catch (error) {
-      logger.error('Error getting clients', {
-        error,
-      });
+      logger.error(
+        {
+          error,
+        },
+        'Error getting clients'
+      );
       return [];
     }
   }
@@ -58,9 +64,12 @@ export class ClientService {
       const existentClient = await this.repository.getClientById(data.id);
 
       if (existentClient) {
-        logger.error(`Client with the id ${data.id} already exists`, {
-          data,
-        });
+        logger.error(
+          {
+            data,
+          },
+          `Client with the id ${data.id} already exists`
+        );
         return wrong(new ClientExistanceConflictError(data.id));
       }
 
@@ -68,7 +77,7 @@ export class ClientService {
 
       return right(this.mapToEntity(client));
     } catch (error) {
-      logger.error('Error saving client with data', { data, error });
+      logger.error({ data, error }, 'Error saving client with data');
       return wrong(new ClientCreationError());
     }
   }
