@@ -1,4 +1,4 @@
-import { Either, right, wrong } from '@core/either';
+import { Either, right } from '@core/either';
 import { UseCase } from '@core/use-case';
 import type { ApplicationError } from '@errors/application-error';
 import type { BusinessError } from '@errors/business-error';
@@ -33,13 +33,33 @@ export class ProcessPdfUseCase extends UseCase<
   protected async execute(
     _input: Input
   ): Promise<Either<FailureOutput, SuccessOutput>> {
-    const file = await this.storageService.get('3001422762-01-2024.pdf');
-    //const file = await this.storageService.get('3001116735-01-2024.pdf');
+    const files = [
+      '3001116735-01-2024.pdf',
+      '3001116735-02-2024.pdf',
+      '3001116735-03-2024.pdf',
+      '3001116735-04-2024.pdf',
+      '3001116735-05-2024.pdf',
+      '3001116735-06-2024.pdf',
+      '3001116735-07-2024.pdf',
+      '3001116735-08-2024.pdf',
+      '3001116735-09-2024.pdf',
+      '3001422762-01-2024.pdf',
+      '3001422762-02-2024.pdf',
+      '3001422762-03-2024.pdf',
+      '3001422762-04-2024.pdf',
+      '3001422762-05-2024.pdf',
+      '3001422762-06-2024.pdf',
+      '3001422762-07-2024.pdf',
+      '3001422762-08-2024.pdf',
+      '3001422762-09-2024.pdf',
+    ];
 
-    const parseResult = await this.pdfParserService.parse(file.buffer);
-    if (parseResult.isWrong()) return wrong(parseResult.value);
+    for (const filePath of files) {
+      const file = await this.storageService.get(filePath);
 
-    console.log(parseResult.value);
+      const parseResult = await this.pdfParserService.parse(file.buffer);
+      if (parseResult.isWrong()) console.error('error', parseResult.value);
+    }
 
     return right(undefined);
   }
