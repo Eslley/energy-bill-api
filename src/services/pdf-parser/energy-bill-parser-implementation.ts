@@ -44,21 +44,13 @@ export class EnergyBillParserService implements PdfParserService {
     };
 
     const extractClientName = (): string => {
-      let clientName = '';
-      const clienNameVariation1match = pdfText.match(
-        regexPatterns.clientNameVariation1
-      );
-      if (!clienNameVariation1match) {
-        const clienNameVariation2match = pdfText.match(
-          regexPatterns.clientNameVariation2
-        );
-        if (clienNameVariation2match) clientName = clienNameVariation2match[1];
-        else throw new EnergyBillParserFieldError('clientName');
-      } else {
-        clientName = clienNameVariation1match[1];
-      }
+      const clientNameMatch =
+        pdfText.match(regexPatterns.clientNameVariation1) ||
+        pdfText.match(regexPatterns.clientNameVariation2);
 
-      return clientName.trim();
+      if (!clientNameMatch) throw new EnergyBillParserFieldError('clientName');
+
+      return clientNameMatch[1].trim();
     };
 
     const referenceMonth = extractField('referencedDate', (match) => match[1]);
