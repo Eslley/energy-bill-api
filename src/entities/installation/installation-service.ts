@@ -90,6 +90,12 @@ export class InstallationService {
     }
   }
 
+  public async countInstallations(
+    where: Prisma.InstallationWhereInput
+  ): Promise<number> {
+    return await this.repository.countInstallations(where);
+  }
+
   public mapToEntity(data: Installation): InstallationEntity {
     return {
       id: data.id,

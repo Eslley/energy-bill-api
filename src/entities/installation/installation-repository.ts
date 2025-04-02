@@ -30,4 +30,12 @@ export class InstallationRepository {
       },
     });
   }
+
+  public async countInstallations(
+    where: Prisma.InstallationWhereInput
+  ): Promise<number> {
+    return await this.prisma.installation.count({
+      where,
+    });
+  }
 }

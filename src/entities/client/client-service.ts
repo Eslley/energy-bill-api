@@ -73,6 +73,10 @@ export class ClientService {
     }
   }
 
+  public async countClients(where: Prisma.ClientWhereInput): Promise<number> {
+    return await this.repository.countClients(where);
+  }
+
   public mapToEntity(data: Client): ClientEntity {
     return {
       id: data.id,

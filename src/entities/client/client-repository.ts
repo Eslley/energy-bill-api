@@ -26,4 +26,10 @@ export class ClientRepository {
       },
     });
   }
+
+  public async countClients(where: Prisma.ClientWhereInput): Promise<number> {
+    return await this.prisma.client.count({
+      where,
+    });
+  }
 }

@@ -95,6 +95,12 @@ export class EnergyBillService {
     }
   }
 
+  public async countEnergyBills(
+    where: Prisma.EnergyBillWhereInput
+  ): Promise<number> {
+    return await this.repository.countEnergyBills(where);
+  }
+
   public mapToEntity(data: EnergyBill): EnergyBillEntity {
     return {
       id: data.id,

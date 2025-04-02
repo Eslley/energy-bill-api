@@ -47,6 +47,14 @@ export class EnergyBillRepository {
     });
   }
 
+  public async countEnergyBills(
+    where: Prisma.EnergyBillWhereInput
+  ): Promise<number> {
+    return await this.prisma.energyBill.count({
+      where,
+    });
+  }
+
   public async deleteEnergyBill(energyBillId: string): Promise<void> {
     await this.prisma.energyBill.delete({
       where: {
