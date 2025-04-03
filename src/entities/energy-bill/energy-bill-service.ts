@@ -1,6 +1,10 @@
-import { EnergyBill, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { EnergyBillRepository } from './energy-bill-repository';
-import { EnergyBillEntity, NewEnergyBillEntity } from './types';
+import {
+  EnergyBillEntity,
+  EnergyBillQueryResult,
+  NewEnergyBillEntity,
+} from './types';
 import logger from '@modules/logger';
 import { Either, right, wrong } from '@core/either';
 import { EnergyBillCreationError, EnergyBillNotFoundError } from './errors';
@@ -108,7 +112,7 @@ export class EnergyBillService {
     return await this.repository.countEnergyBills(where);
   }
 
-  public mapToEntity(data: EnergyBill): EnergyBillEntity {
+  public mapToEntity(data: EnergyBillQueryResult): EnergyBillEntity {
     return {
       id: data.id,
       clientId: data.clientId,
@@ -132,6 +136,8 @@ export class EnergyBillService {
       damageCompensation: data?.damageCompensation?.toNumber(),
       billBarCode: data.billBarCode,
       raw: data.raw,
+      client: data.client,
+      document: data.document,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     };

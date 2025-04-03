@@ -1,18 +1,19 @@
-import { EnergyBill, Prisma } from '@prisma/client';
-import { NewEnergyBillEntity } from './types';
+import { Prisma } from '@prisma/client';
+import { EnergyBillQueryResult, NewEnergyBillEntity } from './types';
 
 export class EnergyBillRepository {
   constructor(private readonly prisma: Prisma.TransactionClient) {}
 
   public async getEnergyBillById(
     energyBillId: string
-  ): Promise<EnergyBill | null> {
+  ): Promise<EnergyBillQueryResult | null> {
     return await this.prisma.energyBill.findFirst({
       where: {
         id: energyBillId,
       },
       include: {
         document: true,
+        client: true,
       },
       orderBy: {
         referenceDate: 'asc',
@@ -20,16 +21,22 @@ export class EnergyBillRepository {
     });
   }
 
-  public async get(where: Prisma.EnergyBillWhereInput): Promise<EnergyBill[]> {
+  public async get(
+    where: Prisma.EnergyBillWhereInput
+  ): Promise<EnergyBillQueryResult[]> {
     return await this.prisma.energyBill.findMany({
       where,
+      include: {
+        document: true,
+        client: true,
+      },
     });
   }
 
   public async save(
     data: NewEnergyBillEntity,
     documentId: string
-  ): Promise<EnergyBill> {
+  ): Promise<EnergyBillQueryResult> {
     return await this.prisma.energyBill.create({
       data: {
         clientId: data.client.number,
@@ -53,6 +60,10 @@ export class EnergyBillRepository {
         damageCompensation: data.damageCompensation,
         billBarCode: data.billBarCode,
         raw: data.raw,
+      },
+      include: {
+        document: true,
+        client: true,
       },
     });
   }
