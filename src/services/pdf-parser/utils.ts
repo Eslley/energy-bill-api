@@ -13,6 +13,21 @@ const monthMap = {
   DEZ: 11,
 };
 
+export const monthNumberMap = [
+  'JAN',
+  'FEV',
+  'MAR',
+  'ABR',
+  'MAI',
+  'JUN',
+  'JUL',
+  'AGO',
+  'SET',
+  'OUT',
+  'NOV',
+  'DEZ',
+];
+
 export const convertToCurrency = (value?: string): number => {
   if (!value) return 0;
 

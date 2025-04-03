@@ -1,4 +1,6 @@
+import { ClientEntity } from '@entities/client/types';
 import { DocumentEntity } from '@entities/document/types';
+import { Client, Document, EnergyBill } from '@prisma/client';
 
 export interface EnergyBillEntity {
   id: string;
@@ -31,6 +33,7 @@ export interface EnergyBillEntity {
   billBarCode: string;
   raw: string;
 
+  client: ClientEntity;
   document: DocumentEntity;
 
   createdAt: Date;
@@ -71,3 +74,8 @@ export interface NewEnergyBillEntity {
   billBarCode: string;
   raw: string;
 }
+
+export type EnergyBillQueryResult = EnergyBill & {
+  client: Client;
+  document: Document;
+};

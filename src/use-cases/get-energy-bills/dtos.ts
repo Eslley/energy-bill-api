@@ -1,14 +1,26 @@
+import { DocumentEntity } from '@entities/document/types';
+
 export type GetEnergyBillsInput = {
   clientNumber?: string;
-  year?: number;
+  year?: string;
 };
 
+export interface EnergyBillWithMonthlyDocument {
+  clientNumber: string;
+  clientName: string;
+  monthlyBills: {
+    [month: string]: { filePath: string };
+  };
+}
+
 export type GetEnergyBillsOutput = {
-  filteredEnergyBills: {
-    clientNumber: string;
-    clientName: string;
-    monthlyBills: {
-      [month: string]: { filePath: string };
-    };
-  }[];
+  filteredEnergyBills: EnergyBillWithMonthlyDocument[];
 };
+
+export type ClientEnergyBillMap = Map<
+  string,
+  {
+    clientName: string;
+    billDocuments: { document: DocumentEntity; month: string }[];
+  }
+>;
