@@ -27,6 +27,8 @@ COPY --from=builder /usr/app/package-lock.json ./package-lock.json
 RUN apk add --no-cache openssl
 RUN mkdir -p /usr/app/upload
 
-EXPOSE 3000
+COPY --from=builder /usr/app/upload/faturas ./upload/faturas
+
+EXPOSE 5000
 
 CMD ["npm", "run", "start"]
