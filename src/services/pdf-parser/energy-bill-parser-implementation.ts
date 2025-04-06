@@ -66,7 +66,7 @@ export class EnergyBillParserService implements PdfParserService {
       regexPatterns.damageCompensation
     );
     const damageCompensation = damageCompensationMatch?.[1]
-      ? convertToCurrency(damageCompensationMatch[1])
+      ? convertToCurrency(damageCompensationMatch[1]) * -1
       : undefined;
 
     return {
@@ -99,12 +99,16 @@ export class EnergyBillParserService implements PdfParserService {
   private mapToParsedEnergyValue(
     regexArray: RegExpMatchArray
   ): ParsedEnergyValue {
+    const totalValue = regexArray.at(3)
+      ? convertToCurrency(regexArray.at(3))
+      : 0;
+
     return {
       quantity: regexArray.at(1)
         ? Number(regexArray.at(1)?.replace('.', ''))
         : 0,
       unitValue: regexArray.at(2) ? convertToCurrency(regexArray.at(2)) : 0,
-      totalValue: regexArray.at(3) ? convertToCurrency(regexArray.at(3)) : 0,
+      totalValue: totalValue < 0 ? totalValue * -1 : totalValue,
     };
   }
 }
