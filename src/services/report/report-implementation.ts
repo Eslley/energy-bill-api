@@ -7,8 +7,6 @@ import {
   EnergyBillReport,
   MonthlyBillsAggregation,
   MonthlyBillsAggregationMap,
-  MonthlyEletricalAndGDIConsumeAggregation,
-  MonthlyEletricalAndGDIConsumeAggregationMap,
   TotalBillsAggregation,
 } from './service';
 import { EnergyBillEntity } from '@entities/energy-bill/types';
@@ -33,19 +31,16 @@ export class EnergyBillReportService {
 
       const allBills = await this.energyBillService.getEnergyBills({});
 
-      const monthlyBillsEvolution =
-        this.aggregateMonthlyBillsEvolution(allBills);
+      const monthlyBillsAggregation =
+        this.aggregateMonthlyBillsAggregation(allBills);
 
       const totalValues = this.aggregateTotalValues(allBills);
-
-      const monthlyEletricalAndGDIConsume =
-        this.aggregateMonthlyEletricalEnergyAndGDIEnergyConsume(allBills);
 
       return {
         numberOfClients,
         numberOfInstallations,
-        monthlyBillsEvolution,
-        monthlyEletricalAndGDIConsume,
+        monthlyBillsAggregation,
+
         ...totalValues,
       };
     } catch (error) {
@@ -92,7 +87,7 @@ export class EnergyBillReportService {
     return aggregation;
   }
 
-  private aggregateMonthlyBillsEvolution(
+  private aggregateMonthlyBillsAggregation(
     bills: EnergyBillEntity[]
   ): MonthlyBillsAggregation[] {
     const monthlyAggregationMap: MonthlyBillsAggregationMap = new Map();
@@ -132,37 +127,6 @@ export class EnergyBillReportService {
         bill.publicLightingContribution;
       aggreggation.totalDamageCompensationPrice +=
         bill?.damageCompensation || 0;
-    });
-
-    return Array.from(monthlyAggregationMap.entries()).map(
-      ([monthYear, value]) => ({
-        monthYear,
-        ...value,
-      })
-    );
-  }
-
-  private aggregateMonthlyEletricalEnergyAndGDIEnergyConsume(
-    bills: EnergyBillEntity[]
-  ): MonthlyEletricalAndGDIConsumeAggregation[] {
-    const monthlyAggregationMap: MonthlyEletricalAndGDIConsumeAggregationMap =
-      new Map();
-
-    bills.forEach((bill) => {
-      const abbreviatedMonthYear = abbreviateReferenceDate(bill.referenceDate);
-
-      if (!monthlyAggregationMap.has(abbreviatedMonthYear)) {
-        monthlyAggregationMap.set(abbreviatedMonthYear, {
-          totalEletricalEnergyConsume: 0,
-          totalGDIEnergyConsume: 0,
-        });
-      }
-
-      const aggregation = monthlyAggregationMap.get(abbreviatedMonthYear)!;
-
-      aggregation.totalEletricalEnergyConsume +=
-        bill.eletricalEnergyQuantity + bill.SCEEEnergyQuantity;
-      aggregation.totalGDIEnergyConsume += bill.GDIEnergyQuantity;
     });
 
     return Array.from(monthlyAggregationMap.entries()).map(
