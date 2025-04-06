@@ -6,8 +6,11 @@ import logger from '@modules/logger';
 import {
   EnergyBillReport,
   MonthlyBillsAggregation,
+  MonthlyBillsAggregationMap,
   MonthlyEletricalAndGDIConsumeAggregation,
+  MonthlyEletricalAndGDIConsumeAggregationMap,
   MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregation,
+  MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregationMap,
   TotalBillsAggregation,
 } from './service';
 import { EnergyBillEntity } from '@entities/energy-bill/types';
@@ -56,59 +59,10 @@ export class EnergyBillReportService {
     }
   }
 
-  private aggregateMonthlyBillsEvolution(bills: EnergyBillEntity[]): {
-    [monthYear: string]: MonthlyBillsAggregation;
-  } {
-    const monthlyAggregation: { [key: string]: MonthlyBillsAggregation } = {};
-
-    bills.forEach((bill) => {
-      const abbreviatedMonthYear = abbreviateReferenceDate(bill.referenceDate);
-
-      if (!monthlyAggregation[abbreviatedMonthYear]) {
-        monthlyAggregation[abbreviatedMonthYear] = {
-          numberOfBills: 0,
-          totalBillsPrice: 0,
-          totalEletricalEnergyConsume: 0,
-          totalEletricalEnergyPrice: 0,
-          totalGDIEnergyConsume: 0,
-          totalGDIEnergyPrice: 0,
-          totalEletricalEnergyPriceWithoutGD: 0,
-          totalPublicLightingContributionPrice: 0,
-          totalDamageCompensationPrice: 0,
-        };
-      }
-
-      monthlyAggregation[abbreviatedMonthYear].numberOfBills += 1;
-      monthlyAggregation[abbreviatedMonthYear].totalBillsPrice +=
-        bill.totalValue;
-      monthlyAggregation[abbreviatedMonthYear].totalEletricalEnergyConsume +=
-        bill.eletricalEnergyQuantity + bill.SCEEEnergyQuantity;
-      monthlyAggregation[abbreviatedMonthYear].totalEletricalEnergyPrice +=
-        bill.eletricalEnergyTotalValue + bill.SCEEEnergyTotalValue;
-      monthlyAggregation[abbreviatedMonthYear].totalGDIEnergyConsume +=
-        bill.GDIEnergyQuantity;
-      monthlyAggregation[abbreviatedMonthYear].totalGDIEnergyPrice +=
-        bill.GDIEnergyTotalValue;
-      monthlyAggregation[
-        abbreviatedMonthYear
-      ].totalEletricalEnergyPriceWithoutGD +=
-        bill.eletricalEnergyTotalValue +
-        bill.SCEEEnergyTotalValue +
-        bill.publicLightingContribution;
-      monthlyAggregation[
-        abbreviatedMonthYear
-      ].totalPublicLightingContributionPrice += bill.publicLightingContribution;
-      monthlyAggregation[abbreviatedMonthYear].totalDamageCompensationPrice +=
-        bill?.damageCompensation || 0;
-    });
-
-    return monthlyAggregation;
-  }
-
   private aggregateTotalValues(
     bills: EnergyBillEntity[]
   ): TotalBillsAggregation {
-    const aggregation: MonthlyBillsAggregation = {
+    const aggregation: TotalBillsAggregation = {
       numberOfBills: 0,
       totalBillsPrice: 0,
       totalEletricalEnergyConsume: 0,
@@ -144,65 +98,117 @@ export class EnergyBillReportService {
     return aggregation;
   }
 
-  private aggregateMonthlyEletricalEnergyAndGDIEnergyConsume(
+  private aggregateMonthlyBillsEvolution(
     bills: EnergyBillEntity[]
-  ): {
-    [monthYear: string]: MonthlyEletricalAndGDIConsumeAggregation;
-  } {
-    const monthlyAggregation: {
-      [monthYear: string]: MonthlyEletricalAndGDIConsumeAggregation;
-    } = {};
+  ): MonthlyBillsAggregation[] {
+    const monthlyAggregationMap: MonthlyBillsAggregationMap = new Map();
 
     bills.forEach((bill) => {
       const abbreviatedMonthYear = abbreviateReferenceDate(bill.referenceDate);
 
-      if (!monthlyAggregation[abbreviatedMonthYear]) {
-        monthlyAggregation[abbreviatedMonthYear] = {
+      if (!monthlyAggregationMap.has(abbreviatedMonthYear)) {
+        monthlyAggregationMap.set(abbreviatedMonthYear, {
+          numberOfBills: 0,
+          totalBillsPrice: 0,
           totalEletricalEnergyConsume: 0,
+          totalEletricalEnergyPrice: 0,
           totalGDIEnergyConsume: 0,
-        };
+          totalGDIEnergyPrice: 0,
+          totalEletricalEnergyPriceWithoutGD: 0,
+          totalPublicLightingContributionPrice: 0,
+          totalDamageCompensationPrice: 0,
+        });
       }
 
-      monthlyAggregation[abbreviatedMonthYear].totalEletricalEnergyConsume +=
+      const aggreggation = monthlyAggregationMap.get(abbreviatedMonthYear)!;
+
+      aggreggation.numberOfBills += 1;
+      aggreggation.totalBillsPrice += bill.totalValue;
+      aggreggation.totalEletricalEnergyConsume +=
         bill.eletricalEnergyQuantity + bill.SCEEEnergyQuantity;
-      monthlyAggregation[abbreviatedMonthYear].totalGDIEnergyConsume +=
-        bill.GDIEnergyQuantity;
+      aggreggation.totalEletricalEnergyPrice +=
+        bill.eletricalEnergyTotalValue + bill.SCEEEnergyTotalValue;
+      aggreggation.totalGDIEnergyConsume += bill.GDIEnergyQuantity;
+      aggreggation.totalGDIEnergyPrice += bill.GDIEnergyTotalValue;
+      aggreggation.totalEletricalEnergyPriceWithoutGD +=
+        bill.eletricalEnergyTotalValue +
+        bill.SCEEEnergyTotalValue +
+        bill.publicLightingContribution;
+      aggreggation.totalPublicLightingContributionPrice +=
+        bill.publicLightingContribution;
+      aggreggation.totalDamageCompensationPrice +=
+        bill?.damageCompensation || 0;
     });
 
-    return monthlyAggregation;
+    return Array.from(monthlyAggregationMap.entries()).map(
+      ([monthYear, value]) => ({
+        monthYear,
+        ...value,
+      })
+    );
+  }
+
+  private aggregateMonthlyEletricalEnergyAndGDIEnergyConsume(
+    bills: EnergyBillEntity[]
+  ): MonthlyEletricalAndGDIConsumeAggregation[] {
+    const monthlyAggregationMap: MonthlyEletricalAndGDIConsumeAggregationMap =
+      new Map();
+
+    bills.forEach((bill) => {
+      const abbreviatedMonthYear = abbreviateReferenceDate(bill.referenceDate);
+
+      if (!monthlyAggregationMap.has(abbreviatedMonthYear)) {
+        monthlyAggregationMap.set(abbreviatedMonthYear, {
+          totalEletricalEnergyConsume: 0,
+          totalGDIEnergyConsume: 0,
+        });
+      }
+
+      const aggregation = monthlyAggregationMap.get(abbreviatedMonthYear)!;
+
+      aggregation.totalEletricalEnergyConsume +=
+        bill.eletricalEnergyQuantity + bill.SCEEEnergyQuantity;
+      aggregation.totalGDIEnergyConsume += bill.GDIEnergyQuantity;
+    });
+
+    return Array.from(monthlyAggregationMap.entries()).map(
+      ([monthYear, value]) => ({
+        monthYear,
+        ...value,
+      })
+    );
   }
 
   public aggregateMonthlEletricalConsumeWithoutGDAndGDIPrice(
     bills: EnergyBillEntity[]
-  ): {
-    [monthYear: string]: MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregation;
-  } {
-    const monthlyAggregation: {
-      [
-        monthYear: string
-      ]: MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregation;
-    } = {};
+  ): MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregation[] {
+    const monthlyAggregationMap: MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregationMap =
+      new Map();
 
     bills.forEach((bill) => {
       const abbreviatedMonthYear = abbreviateReferenceDate(bill.referenceDate);
 
-      if (!monthlyAggregation[abbreviatedMonthYear]) {
-        monthlyAggregation[abbreviatedMonthYear] = {
+      if (!monthlyAggregationMap.has(abbreviatedMonthYear)) {
+        monthlyAggregationMap.set(abbreviatedMonthYear, {
           totalEletricalEnergyPriceWithoutGD: 0,
           totalGDIEnergyPrice: 0,
-        };
+        });
       }
 
-      monthlyAggregation[
-        abbreviatedMonthYear
-      ].totalEletricalEnergyPriceWithoutGD +=
+      const aggregation = monthlyAggregationMap.get(abbreviatedMonthYear)!;
+
+      aggregation.totalEletricalEnergyPriceWithoutGD +=
         bill.eletricalEnergyQuantity +
         bill.SCEEEnergyQuantity +
         bill.publicLightingContribution;
-      monthlyAggregation[abbreviatedMonthYear].totalGDIEnergyPrice +=
-        bill.GDIEnergyTotalValue;
+      aggregation.totalGDIEnergyPrice += bill.GDIEnergyTotalValue;
     });
 
-    return monthlyAggregation;
+    return Array.from(monthlyAggregationMap.entries()).map(
+      ([monthYear, value]) => ({
+        monthYear,
+        ...value,
+      })
+    );
   }
 }

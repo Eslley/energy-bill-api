@@ -15,9 +15,6 @@ export class EnergyBillRepository {
         document: true,
         client: true,
       },
-      orderBy: {
-        referenceDate: 'asc',
-      },
     });
   }
 
@@ -29,6 +26,9 @@ export class EnergyBillRepository {
       include: {
         document: true,
         client: true,
+      },
+      orderBy: {
+        referenceDate: 'asc',
       },
     });
   }
