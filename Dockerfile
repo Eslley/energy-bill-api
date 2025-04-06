@@ -29,6 +29,8 @@ RUN mkdir -p /usr/app/upload
 
 COPY --from=builder /usr/app/upload/faturas ./upload/faturas
 
+ENV DATABASE_URL=${DATABASE_URL}
+
 EXPOSE 5000
 
 CMD ["npm", "run", "start"]
