@@ -9,8 +9,6 @@ import {
   MonthlyBillsAggregationMap,
   MonthlyEletricalAndGDIConsumeAggregation,
   MonthlyEletricalAndGDIConsumeAggregationMap,
-  MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregation,
-  MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregationMap,
   TotalBillsAggregation,
 } from './service';
 import { EnergyBillEntity } from '@entities/energy-bill/types';
@@ -43,15 +41,11 @@ export class EnergyBillReportService {
       const monthlyEletricalAndGDIConsume =
         this.aggregateMonthlyEletricalEnergyAndGDIEnergyConsume(allBills);
 
-      const monthlyEletricalConsumeWithoutGDAndGDIPrice =
-        this.aggregateMonthlEletricalConsumeWithoutGDAndGDIPrice(allBills);
-
       return {
         numberOfClients,
         numberOfInstallations,
         monthlyBillsEvolution,
         monthlyEletricalAndGDIConsume,
-        monthlyEletricalConsumeWithoutGDAndGDIPrice,
         ...totalValues,
       };
     } catch (error) {
@@ -169,39 +163,6 @@ export class EnergyBillReportService {
       aggregation.totalEletricalEnergyConsume +=
         bill.eletricalEnergyQuantity + bill.SCEEEnergyQuantity;
       aggregation.totalGDIEnergyConsume += bill.GDIEnergyQuantity;
-    });
-
-    return Array.from(monthlyAggregationMap.entries()).map(
-      ([monthYear, value]) => ({
-        monthYear,
-        ...value,
-      })
-    );
-  }
-
-  public aggregateMonthlEletricalConsumeWithoutGDAndGDIPrice(
-    bills: EnergyBillEntity[]
-  ): MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregation[] {
-    const monthlyAggregationMap: MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregationMap =
-      new Map();
-
-    bills.forEach((bill) => {
-      const abbreviatedMonthYear = abbreviateReferenceDate(bill.referenceDate);
-
-      if (!monthlyAggregationMap.has(abbreviatedMonthYear)) {
-        monthlyAggregationMap.set(abbreviatedMonthYear, {
-          totalEletricalEnergyPriceWithoutGD: 0,
-          totalGDIEnergyPrice: 0,
-        });
-      }
-
-      const aggregation = monthlyAggregationMap.get(abbreviatedMonthYear)!;
-
-      aggregation.totalEletricalEnergyPriceWithoutGD +=
-        bill.eletricalEnergyQuantity +
-        bill.SCEEEnergyQuantity +
-        bill.publicLightingContribution;
-      aggregation.totalGDIEnergyPrice += bill.GDIEnergyTotalValue;
     });
 
     return Array.from(monthlyAggregationMap.entries()).map(

@@ -12,7 +12,6 @@ export interface EnergyBillReport {
   totalDamageCompensationPrice: number;
   monthlyBillsEvolution: MonthlyBillsAggregation[];
   monthlyEletricalAndGDIConsume: MonthlyEletricalAndGDIConsumeAggregation[];
-  monthlyEletricalConsumeWithoutGDAndGDIPrice: MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregation[];
 }
 
 export interface MonthlyBillsAggregation {
@@ -34,12 +33,6 @@ export interface MonthlyEletricalAndGDIConsumeAggregation {
   totalGDIEnergyConsume: number;
 }
 
-export interface MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregation {
-  monthYear: string;
-  totalEletricalEnergyPriceWithoutGD: number;
-  totalGDIEnergyPrice: number;
-}
-
 export type OmittedMonthYear<T> = Omit<T, 'monthYear'>;
 export type TotalBillsAggregation = OmittedMonthYear<MonthlyBillsAggregation>;
 
@@ -50,8 +43,4 @@ export type MonthlyBillsAggregationMap = Map<
 export type MonthlyEletricalAndGDIConsumeAggregationMap = Map<
   string,
   OmittedMonthYear<MonthlyEletricalAndGDIConsumeAggregation>
->;
-export type MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregationMap = Map<
-  string,
-  OmittedMonthYear<MonthlyEletricalConsumeWithoutGDAndGDIPriceAggregation>
 >;
