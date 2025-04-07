@@ -94,11 +94,14 @@ export class GetEnergyBillsUseCase extends UseCase<
 
   private buildMonthlyBills(
     billDocuments: { document: DocumentEntity; month: string }[]
-  ): { [month: string]: { filePath: string } } {
+  ): { [month: string]: { filePath: string; fileName: string } } {
     return billDocuments.reduce((monthMap, { document, month }) => {
-      monthMap[month] = { filePath: document.path };
+      monthMap[month] = {
+        filePath: document.path,
+        fileName: document.fileName,
+      };
       return monthMap;
-    }, {} as { [month: string]: { filePath: string } });
+    }, {} as { [month: string]: { filePath: string; fileName: string } });
   }
 
   private buildYearQuery(year?: string): {

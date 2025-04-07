@@ -9,7 +9,7 @@ export interface EnergyBillWithMonthlyDocument {
   clientNumber: string;
   clientName: string;
   monthlyBills: {
-    [month: string]: { filePath: string };
+    [month: string]: { filePath: string; fileName: string };
   };
 }
 
